@@ -22,12 +22,18 @@ namespace GameBee.Calculator
                 char current = expression[index];
                 if (ExpressionSyntax.IsOperator(current))
                 {
-                    if (numbers.Count == 0 || numbers.Count == operators.Count)
-                        throw InvalidExpression();
-
-                    operators.Add(ExpressionSyntax.NormalizeOperator(current));
-                    index++;
-                    continue;
+                    bool isUnary = numbers.Count == 0 || numbers.Count == operators.Count;
+                    if (isUnary)
+                    {
+                        if (current != '+' && current != '-')
+                            throw InvalidExpression();
+                    }
+                    else
+                    {
+                        operators.Add(ExpressionSyntax.NormalizeOperator(current));
+                        index++;
+                        continue;
+                    }
                 }
 
                 numbers.Add(ReadNumber(expression, ref index));
@@ -58,6 +64,9 @@ namespace GameBee.Calculator
         {
             int start = index;
             bool seenDecimal = false;
+
+            if (index < expression.Length && (expression[index] == '+' || expression[index] == '-'))
+                index++;
 
             while (index < expression.Length)
             {
