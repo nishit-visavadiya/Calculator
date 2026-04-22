@@ -39,10 +39,6 @@ namespace GameBee.Calculator
 
         #endregion
 
-        #region EVENT_HANDLERS
-
-        #endregion
-
         #region UI_CALLBACKS
 
         public void OnButtonClicked()

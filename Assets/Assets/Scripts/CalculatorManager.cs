@@ -14,12 +14,10 @@ namespace GameBee.Calculator
 
         #region PRIVATE_VARS
 
-        [SerializeField] private CalculatorView _view;
-
         private const string FreshState = "0";
 
+        [SerializeField] private CalculatorView _view;
         [SerializeField] private string _expression = FreshState;
-        
         [SerializeField] private string _lastResult;
 
         #endregion
@@ -90,10 +88,11 @@ namespace GameBee.Calculator
 
             _lastResult = null;
 
+            // Prevent leading zeros in current operand
             int segmentStart = FindCurrentNumberStart();
             string currentSegment = _expression.Substring(segmentStart);
 
-            if (currentSegment == FreshState)
+            if (currentSegment == FreshState || currentSegment == "00")
             {
                 if (digit[0] == '0')
                     return;
@@ -110,16 +109,9 @@ namespace GameBee.Calculator
         {
             _lastResult = null;
 
-            int segmentStart = FindCurrentNumberStart();
-
-            if (segmentStart == _expression.Length)
+            if (CurrentNumberHasDecimal())
                 return;
 
-            for (int i = segmentStart; i < _expression.Length; i++)
-            {
-                if (_expression[i] == '.')
-                    return;
-            }
             _expression += '.';
             SetExpression();
         }
@@ -129,24 +121,8 @@ namespace GameBee.Calculator
             if (string.IsNullOrEmpty(op))
                 return;
 
-            if (_lastResult != null)
-            {
-                _expression = _lastResult;
-                _lastResult = null;
-            }
-
-            if (_expression.Length == 0)
-                return;
-
-            char last = _expression[_expression.Length - 1];
-            if (ExpressionSyntax.IsOperator(last))
-            {
-                _expression = _expression.Substring(0, _expression.Length - 1) + op;
-            }
-            else
-            {
-                _expression += op;
-            }
+            ContinueFromLastResult();
+            ReplaceTrailingOperator(op);
             SetExpression();
         }
 
@@ -160,7 +136,7 @@ namespace GameBee.Calculator
                 return;
             }
 
-            if (_expression.Length == 0 || _expression == FreshState)
+            if (_expression == FreshState)
                 return;
 
             _expression = _expression.Substring(0, _expression.Length - 1);
@@ -182,7 +158,6 @@ namespace GameBee.Calculator
             }
         }
 
-        
         private void Evaluate()
         {
             if (_lastResult != null)
@@ -190,6 +165,7 @@ namespace GameBee.Calculator
 
             string expr = _expression;
 
+            // REMOVE ENDING OPERATOR IF ANY
             while (expr.Length > 0 && ExpressionSyntax.IsOperator(expr[expr.Length - 1]))
                 expr = expr.Substring(0, expr.Length - 1);
 
@@ -238,13 +214,37 @@ namespace GameBee.Calculator
             return 0;
         }
 
+        private bool CurrentNumberHasDecimal()
+        {
+            int segmentStart = FindCurrentNumberStart();
+            for (int i = segmentStart; i < _expression.Length; i++)
+            {
+                if (_expression[i] == '.')
+                    return true;
+            }
+            return false;
+        }
+
+        private void ContinueFromLastResult()
+        {
+            if (_lastResult == null)
+                return;
+            _expression = _lastResult;
+            _lastResult = null;
+        }
+
+        private void ReplaceTrailingOperator(string op)
+        {
+            char last = _expression[_expression.Length - 1];
+            if (ExpressionSyntax.IsOperator(last))
+                _expression = _expression.Substring(0, _expression.Length - 1) + op;
+            else
+                _expression += op;
+        }
+
         #endregion
 
         #region CO-ROUTINES
-
-        #endregion
-
-        #region EVENT_HANDLERS
 
         #endregion
 

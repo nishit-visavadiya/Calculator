@@ -6,7 +6,13 @@ namespace GameBee.Calculator
 {
     public static class Calculator
     {
+        #region PRIVATE_VARS
+
         private const string InvalidExpressionMessage = "Invalid expression.";
+
+        #endregion
+
+        #region PUBLIC_FUNCTIONS
 
         public static double Evaluate(string expression)
         {
@@ -23,9 +29,9 @@ namespace GameBee.Calculator
                 if (ExpressionSyntax.IsOperator(current))
                 {
                     bool isUnary = numbers.Count == 0 || numbers.Count == operators.Count;
-                    if (isUnary)
+                    if (isUnary) // Defensive: handles unary signs (e.g., "-5+3") even though UI currently prevents them
                     {
-                        if (current != '+' && current != '-')
+                        if (current != '+' && current != '-') 
                             throw InvalidExpression();
                     }
                     else
@@ -60,11 +66,16 @@ namespace GameBee.Calculator
             return result;
         }
 
+        #endregion
+
+        #region PRIVATE_FUNCTIONS
+
         private static double ReadNumber(string expression, ref int index)
         {
             int start = index;
             bool seenDecimal = false;
 
+            // Consume unary +/- as part of the number token
             if (index < expression.Length && (expression[index] == '+' || expression[index] == '-'))
                 index++;
 
@@ -117,7 +128,9 @@ namespace GameBee.Calculator
 
                 double right = numbers[index + 1];
                 if (op == '/' && right == 0d)
+                {
                     throw new DivideByZeroException();
+                }
 
                 double left = numbers[index];
                 numbers[index] = op == '*' ? left * right : left / right;
@@ -130,5 +143,8 @@ namespace GameBee.Calculator
         {
             return new FormatException(InvalidExpressionMessage);
         }
+
+        #endregion
+
     }
 }

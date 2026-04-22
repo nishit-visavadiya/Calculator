@@ -2,7 +2,13 @@ namespace GameBee.Calculator
 {
     public static class ExpressionSyntax
     {
+        #region PRIVATE_VARS
+
         private const string Operators = "+-*/Xx";
+
+        #endregion
+
+        #region PUBLIC_FUNCTIONS
 
         public static bool IsOperator(char value)
         {
@@ -16,5 +22,7 @@ namespace GameBee.Calculator
 
             return value;
         }
+
+        #endregion
     }
 }

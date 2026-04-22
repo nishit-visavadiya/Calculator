@@ -46,37 +46,19 @@ namespace GameBee.Calculator
 
         public void SetExpression(string text)
         {
-            if (_expressionLabel != null)
-            {
-                _expressionLabel.text = text;
-                _expressionLabel.gameObject.SetActive(true);
-            }
-            if (_resultLabel != null)
-                _resultLabel.gameObject.SetActive(false);
+            _expressionLabel.text = text;
+            SetExpressionText(true);
         }
 
         public void SetResult(string text)
         {
-            if (_resultLabel != null)
-            {
-                _resultLabel.text = text;
-                _resultLabel.gameObject.SetActive(true);
-            }
-            if (_expressionLabel != null)
-                _expressionLabel.gameObject.SetActive(false);
+            _resultLabel.text = text;
+            SetExpressionText(false);
         }
 
         #endregion
 
         #region PRIVATE_FUNCTIONS
-
-        #endregion
-
-        #region CO-ROUTINES
-
-        #endregion
-
-        #region EVENT_HANDLERS
 
         private void HandleButtonPressed(ButtonInput button)
         {
@@ -84,13 +66,19 @@ namespace GameBee.Calculator
                 CalculatorManager.Instance.HandleInput(button);
         }
 
+        private void SetExpressionText(bool isActive)
+        {
+            _expressionLabel.gameObject.SetActive(isActive);
+            _resultLabel.gameObject.SetActive(!isActive);
+        }
+
+        #endregion
+
+        #region CO-ROUTINES
+
         #endregion
 
         #region UI_CALLBACKS
-
-        #endregion
-
-        #region EDITOR_CALLBACKS
 
         #endregion
     }
